@@ -3,9 +3,8 @@ import User from "../models/userModel.js";
 import config from "../config/env.js";
 import tokenBlackListModel from "../models/blacklistModel.js";
 const authMiddleware = async(req,res,next)=>{
-    try {
+    try { 
         const token = req.cookies?.accesstoken
-        console.log(token)
         
         if (!token) {
             return res.status(401).json({
@@ -14,7 +13,6 @@ const authMiddleware = async(req,res,next)=>{
             });
         }
         const isTokenBlackListed = await tokenBlackListModel.findOne({accesstoken:token});
-        console.log("Blacklisted:", isTokenBlackListed);
         if(isTokenBlackListed){
             return res.status(401).json({
                 success:false,
@@ -22,7 +20,7 @@ const authMiddleware = async(req,res,next)=>{
             })
         }
          const decoded = jwt.verify(token, config.JWT_SECRET);
-
+         
          // get the user 
           const user = await User.findById(decoded.id).select("-password");
 
@@ -35,6 +33,7 @@ const authMiddleware = async(req,res,next)=>{
          req.user = user;
          next()
     } catch (error) {
+        console.log(error)
           return res.status(401).json({
             success: false,
             message: "Invalid or expired access token",

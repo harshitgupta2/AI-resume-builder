@@ -1,22 +1,26 @@
 import express from 'express';
 import config from './config/env.js';
 import cors from 'cors'
-import connectDb from './config/db.js';
 import authRoutes from './routes/authRoute.js';
 import cookieParser from 'cookie-parser';
+import interviewRouter from './routes/interviewRoutes.js';
+
 
 const app = express();
 
-// database connection function
-connectDb();
 
-app.use(cors());
+app.use(cors({
+    origin:'http://localhost:5173',
+    credentials:true
+}));
 app.use(express.json());
 app.use(cookieParser())
 
 
 // auth routes 
 app.use('/api/auth',authRoutes)
+app.use('/api/interview',interviewRouter)
+
 
 
 

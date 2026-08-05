@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 if(!process.env.PORT){
-    console.log("  not availabel");
+    console.log("PORT not availabel");
 }
 if(!process.env.JWT_SECRET){
     console.log("jwt secret not available");
