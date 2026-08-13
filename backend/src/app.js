@@ -12,7 +12,8 @@ const app = express();
 app.use(cors({
     origin:[
         'http://localhost:5173',
-        'https://ai-resume-builder-indol-eta.vercel.app'
+        // Matches every Vercel deployment URL for this project (previews change each deploy)
+        /^https:\/\/ai-resume-builder-.*\.vercel\.app$/
     ],
     credentials:true
 }));
