@@ -1,4 +1,4 @@
-import { AuthContext } from "../context/authContext"
+import { AuthContext } from "../context/AuthContext"
 import { useContext } from "react"
 import { Navigate , useLocation } from "react-router"
 import Loader from "../components/Loader"
