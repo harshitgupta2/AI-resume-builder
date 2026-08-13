@@ -1,32 +1,27 @@
+/* ------------------------------------------------------------------
+   Loader — matches the interview Home theme
+   slate-950 surface, amber-300 accent, editorial type
+------------------------------------------------------------------ */
 
-const Loader = ({ message = "Loading..." }) => {
+const EYEBROW = "text-[10.5px] font-semibold uppercase tracking-[0.2em]";
+
+const Loader = ({ message = "Loading…" }) => {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#020617] px-4 text-white">
-      {/* Background Glows (Matching your page theme) */}
-      <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-violet-700/20 blur-[100px]" />
-      <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-500/15 blur-[120px]" />
+    <div className="font-body relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-950 px-6 text-slate-50">
+      {/* subtle amber wash */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-amber-300/10 blur-[130px]" />
 
-      {/* Main Loader Content */}
-      <div className="relative z-10 flex flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-2xl shadow-2xl shadow-violet-900/20">
-        
-        {/* Glowing Dual Spinner */}
+      <div className="relative z-10 flex flex-col items-center gap-7 rounded-2xl border border-slate-800 bg-slate-900/60 px-10 py-9 backdrop-blur-sm">
+        {/* Dual ring spinner */}
         <div className="relative flex items-center justify-center">
-          {/* Outer Ring */}
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-transparent border-t-violet-500 border-r-indigo-500 [animation-duration:1.2s]" />
-          
-          {/* Inner Reverse Ring */}
-          <div className="absolute h-10 w-10 animate-spin rounded-full border-4 border-transparent border-t-cyan-400 border-l-cyan-400 [animation-direction:reverse] [animation-duration:0.8s]" />
-          
-          {/* Glowing Center Pulse */}
-          <div className="absolute h-3 w-3 rounded-full bg-violet-400 shadow-[0_0_12px_#8b5cf6] animate-pulse" />
+          <div className="h-14 w-14 animate-spin rounded-full border-2 border-slate-800 border-t-amber-300 [animation-duration:1.1s]" />
+          <div className="absolute h-8 w-8 animate-spin rounded-full border-2 border-transparent border-b-amber-300/60 [animation-direction:reverse] [animation-duration:0.8s]" />
+          <div className="absolute h-1.5 w-1.5 rounded-full bg-amber-300 shadow-[0_0_12px_theme(colors.amber.300)]" />
         </div>
 
-        {/* Text with subtle fade animation */}
-        <div className="flex flex-col items-center gap-1">
-          <p className="animate-pulse text-sm font-medium tracking-wide text-slate-200">
-            {message}
-          </p>
-          <span className="text-xs text-slate-400">Please wait a moment</span>
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <p className="font-display text-lg italic text-slate-50">{message}</p>
+          <span className={`${EYEBROW} text-slate-500`}>Please wait a moment</span>
         </div>
       </div>
     </div>

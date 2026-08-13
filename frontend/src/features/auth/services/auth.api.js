@@ -24,7 +24,8 @@ export const login = async({email,password})=>{
         })
         return response.data
     }catch(error){
-        console.log(error)
+        // Surface the backend message (e.g. "Invalid email or password") to the UI.
+       console.log(error)
     }
 }
 export const logout = async()=>{

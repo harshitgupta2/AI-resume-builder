@@ -1,25 +1,38 @@
 import { useState } from "react";
-import { Mail, Lock, Eye, EyeOff ,User} from "lucide-react";
-import { Link,useNavigate,useLocation } from "react-router";
-import Loader from "../components/Loader";
+import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
+import { Link, Navigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import toast from "react-hot-toast";
-const Login = () => {
+import Loader from "../components/Loader";
+
+/* ------------------------------------------------------------------
+   Register — matches the Login theme
+   slate-950 / slate-50 surface, amber-300 accent, editorial type
+------------------------------------------------------------------ */
+
+const EYEBROW = "text-[10.5px] font-semibold uppercase tracking-[0.2em]";
+const FIELD =
+  "flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 transition-colors hover:border-slate-700 focus-within:border-amber-300";
+const INPUT =
+  "w-full bg-transparent py-3.5 text-[15px] text-slate-50 placeholder:text-slate-600 outline-none";
+
+const Register = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const[username , setuserName] = useState("");
   const [errors, setErrors] = useState({});
 
-  const {laoding,handleRegister} = useAuth();
-  const navigate  =useNavigate();
   const location = useLocation();
-
-  const from = location.state?.from?.pathname || '/'
+  const { user, loading, handleRegister } = useAuth();
+  const from = location.state?.from?.pathname || "/";
 
   const validate = () => {
     const newErrors = {};
+
+    if (!username.trim()) {
+      newErrors.username = "Name is required";
+    }
 
     if (!email.trim()) {
       newErrors.email = "Email is required";
@@ -42,150 +55,143 @@ const Login = () => {
     if (!validate()) return;
 
     try {
-      await handleRegister({username,email,password})
-      toast.success("User Registerd Successfully")
-      navigate(from,{replace:true})
-    
+      const registered = await handleRegister({ username, email, password });
+      if (registered) {
+        toast.success("Account created successfully");
+        // Redirect is handled declaratively by the <Navigate> guard below,
+        // once the `user` state has actually committed — no race.
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
     } catch (error) {
-    throw new Error("Registration failed",{cause:error})
+      toast.error(error?.message || "Registration failed");
     }
   };
 
-  if(laoding){
-    return <Loader />
+  // Once authenticated, leave the register page for the intended destination.
+  if (user) {
+    return <Navigate to={from} replace />;
+  }
+
+  if (loading) {
+    return <Loader message="Creating your account…" />;
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#020617] flex items-center justify-center px-4 py-8">
-      {/* Background Glow */}
-      <div className="absolute -top-32 -left-24 h-96 w-96 rounded-full bg-violet-700/30 blur-[120px]" />
-      <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-cyan-500/20 blur-[140px]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#312E81_0%,transparent_35%)]" />
+    <main className="font-body relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-6 py-12 text-slate-50">
+      {/* soft amber wash to echo the accent, kept subtle */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-amber-300/10 blur-[130px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-amber-300/5 blur-[120px]" />
 
-      {/* Login Card */}
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl shadow-violet-900/20 p-6">
-        {/* Logo & Header Container */}
-        <div className="flex flex-col items-center mb-5">
-          <h1 className="text-center text-2xl font-bold text-white">
-            Welcome
-          </h1>
-          <p className="mt-1 text-center text-sm text-slate-400">
-            Sign in to continue to your account.
-          </p>
+      <div className="relative w-full max-w-md">
+        {/* Wordmark */}
+        <div className="mb-8 flex items-center justify-between">
+          <span className="font-display text-xl tracking-wide">
+            Interview <em className="not-italic text-amber-300">Report</em>
+          </span>
+          <span className={`${EYEBROW} text-slate-500`}>Sign up</span>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 backdrop-blur-sm">
+          <p className={`${EYEBROW} mb-4 text-amber-300`}>Get started</p>
 
-          {/*Username */}
-           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-300">
-              Name
-            </label>
-            <div className="flex items-center rounded-lg border border-slate-700 bg-[#0F172A]/80 px-3.5 transition-all duration-300 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/30">
-              <User className="text-slate-400 shrink-0" size={16} />
-              <input
-                type="text"
-                placeholder="Enter your name"
-                value={username}
-                onChange={(e) => setuserName(e.target.value)}
-                className="w-full bg-transparent px-2.5 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none"
-              />
-            </div>
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-400">{errors.email}</p>
-            )}
-          </div>
-          {/* Email */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-300">
-              Email
-            </label>
-            <div className="flex items-center rounded-lg border border-slate-700 bg-[#0F172A]/80 px-3.5 transition-all duration-300 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/30">
-              <Mail className="text-slate-400 shrink-0" size={16} />
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-transparent px-2.5 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none"
-              />
-            </div>
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-400">{errors.email}</p>
-            )}
-          </div>
+          <h1 className="font-display mb-2 text-4xl font-light leading-[1.08] tracking-tight">
+            Prepare
+            <br />
+            <em className="italic text-amber-300">like you mean it.</em>
+          </h1>
 
-          {/* Password */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-slate-300">
-              Password
-            </label>
-            <div className="flex items-center rounded-lg border border-slate-700 bg-[#0F172A]/80 px-3.5 transition-all duration-300 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/30">
-              <Lock className="text-slate-400 shrink-0" size={16} />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-transparent px-2.5 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-slate-400 hover:text-white transition"
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-400">{errors.password}</p>
-            )}
-          </div>
+          <p className="mb-8 max-w-sm text-sm text-slate-400">
+            Create your account to generate reports and track everything you're
+            preparing for.
+          </p>
 
-          {/* Remember */}
-          <div className="flex items-center justify-between text-xs">
-            <label className="flex items-center gap-2 text-slate-400 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={() => setRememberMe(!rememberMe)}
-                className="accent-violet-600 rounded"
-              />
-              Remember me
-            </label>
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            {/* Name */}
+            <div>
+              <label className={`${EYEBROW} mb-2 block text-slate-500`}>Name</label>
+              <div className={FIELD}>
+                <User className="shrink-0 text-slate-500" size={16} />
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className={INPUT}
+                />
+              </div>
+              {errors.username && (
+                <p className="mt-2 text-[13px] text-rose-300">{errors.username}</p>
+              )}
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className={`${EYEBROW} mb-2 block text-slate-500`}>Email</label>
+              <div className={FIELD}>
+                <Mail className="shrink-0 text-slate-500" size={16} />
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={INPUT}
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-2 text-[13px] text-rose-300">{errors.email}</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className={`${EYEBROW} mb-2 block text-slate-500`}>Password</label>
+              <div className={FIELD}>
+                <Lock className="shrink-0 text-slate-500" size={16} />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={INPUT}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="shrink-0 text-slate-500 transition-colors hover:text-amber-300"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-2 text-[13px] text-rose-300">{errors.password}</p>
+              )}
+            </div>
+
+            {/* Submit */}
             <button
-              type="button"
-              className="text-violet-400 hover:text-violet-300"
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-full border border-amber-300 bg-amber-300 px-6 py-3.5 text-sm font-semibold text-slate-950 transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Forgot Password?
+              {loading ? "Creating account…" : "Create account"}
             </button>
-          </div>
-
-          {/* Login Button */}
-          <button
-            type="submit"
-            className="h-11 w-full rounded-lg bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.01] hover:shadow-lg hover:shadow-violet-600/30 active:scale-100 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-           Sign In
-          </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 py-1">
-            <div className="h-px flex-1 bg-slate-800" />
-            <span className="text-xs text-slate-500">OR</span>
-            <div className="h-px flex-1 bg-slate-800" />
-          </div>
-        </form>
+          </form>
+        </div>
 
         {/* Footer */}
-        <p className="mt-5 text-center text-xs text-slate-400">
-          Already Have and Account?
-          <Link to="/login" className="ml-1.5 cursor-pointer font-semibold text-violet-400 hover:text-violet-300">Login</Link>
+        <p className="mt-6 text-center text-[13px] text-slate-500">
+          Already have an account?
+          <Link
+            to="/login"
+            className="ml-1.5 font-semibold text-amber-300 underline underline-offset-4 hover:opacity-90"
+          >
+            Sign in
+          </Link>
         </p>
       </div>
     </main>
   );
 };
 
-export default Login;
+export default Register;

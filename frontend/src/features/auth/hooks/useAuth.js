@@ -1,26 +1,10 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
-import { register, login, logout ,getUser} from "../auth.api.js";
+import { register, login, logout} from "../services/auth.api.js";
 
 export const useAuth = () => {
     const { user, loading, setUser, setLoading } = useContext(AuthContext);
-          useEffect(()=>{
-        const getAndSetUser = async()=>{
-            console.log("before Api");
-        try {
-           const data =  await getUser()
-           console.log("after api")
-           console.log(data)
-           setUser(data.user)
-        } catch (error) {
-          console.log(error)
-        }finally{
-            console.log("finally")
-            setLoading(false)
-        }
-    }
-    getAndSetUser()
-    },[])
+
 
     const handleRegister = async ({ username, email, password }) => {
         try {
@@ -39,14 +23,13 @@ export const useAuth = () => {
         
     };
     const   handleLogin = async ({ email, password }) => {
+        setLoading(true);
         try {
-            setLoading(true);
             const data = await login({ email, password });
-            if (data) {
+            if (data?.user) {
                 setUser(data.user);
             }
-        } catch (error) {
-            console.log(error);
+            return data?.user ?? null;
         } finally {
             setLoading(false);
         }

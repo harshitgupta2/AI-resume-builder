@@ -58,6 +58,11 @@ const preparationPlanSchema = z.object({
 // --- Main Schema ---
 
 export const interviewReportZodSchema = z.object({
+  jobTitle: z
+    .string()
+    .describe(
+      "The job title/role this report targets, taken from the job description (e.g., 'Senior Frontend Engineer'). If not stated explicitly, infer a concise, conventional role title."
+    ),
   matchScore: z
     .number()
     .min(0)

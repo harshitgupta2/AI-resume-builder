@@ -71,6 +71,9 @@ import mongoose from 'mongoose'
  // actual main schema 
  const interviewReportSchema = new mongoose.Schema({
 
+    jobTitle:{
+        type:String,
+    },
     jobDescription:{
         type:String,
         required:[true,"Job Description is required"]

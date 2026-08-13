@@ -15,6 +15,21 @@ const interviewRouter  = Router();
  */
 interviewRouter.post("/",authMiddleware,upload.single('resume'),interviewController.generateInterviewReportController);
 
+/**
+ * @route GET /api/interview/report/:interviewId
+ * @desc Fetch an interview report by its ID for the authenticated user.
+ * @access private
+ */
+interviewRouter.get("/report/:interviewId",authMiddleware,interviewController.getInterviewReportController);
+    
+/**
+ * @route GET /api/interview/reports/all
+ * @desc Fetch all interview reports for the authenticated user.
+ * @access private
+ */
+interviewRouter.get("/reports/all",authMiddleware,interviewController.getAllInterviewReportsController);
+
+interviewRouter.post("/resume/pdf/:interviewReportId",authMiddleware,interviewController.genratePdfController )
 
 
 
