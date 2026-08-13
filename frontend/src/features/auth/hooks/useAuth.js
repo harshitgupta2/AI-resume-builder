@@ -10,7 +10,6 @@ export const useAuth = () => {
         try {
             setLoading(true);
             const data = await register({ username, email, password });
-            console.log("from useAuth", data);
             if (data) {
                 setUser(data.user);
             }
