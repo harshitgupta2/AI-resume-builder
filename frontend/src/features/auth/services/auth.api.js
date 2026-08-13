@@ -1,7 +1,13 @@
 import axios from 'axios'
 
+// Normalize so the base always ends in exactly one /api — whether VITE_API_URL
+// is set to the origin (…onrender.com) or already includes /api.
+const API_BASE = (import.meta.env.VITE_API_URL || "https://ai-resume-builder-7a3u.onrender.com")
+    .replace(/\/+$/, "")
+    .replace(/\/api$/, "");
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "https://ai-resume-builder-7a3u.onrender.com/api",
+    baseURL: `${API_BASE}/api`,
     withCredentials:true
 })
 
