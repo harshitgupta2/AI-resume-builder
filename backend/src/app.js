@@ -12,7 +12,7 @@ const app = express();
 app.use(cors({
     origin:[
         'http://localhost:5173',
-      ' https://ai-resume-builder-production-d36a.up.railway.app'
+      'https://ai-resume-builder-silk-pi.vercel.app'
     ],
     credentials:true
 }));
