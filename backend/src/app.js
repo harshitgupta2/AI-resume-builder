@@ -13,7 +13,7 @@ app.use(cors({
     origin:[
         'http://localhost:5173',
         // Matches every Vercel deployment URL for this project (previews change each deploy)
-        /^https:\/\/ai-resume-builder-.*\.vercel\.app$/
+      ' https://ai-resume-builder-production-d36a.up.railway.app/'
     ],
     credentials:true
 }));
