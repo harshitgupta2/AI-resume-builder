@@ -29,7 +29,8 @@ export const useAuth = () => {
             if (data?.user) {
                 setUser(data.user);
             }
-            return data?.user ?? null;
+            console.log(data)
+            return data;
         }catch(error){
              const message =
             error?.response?.data?.message ||

@@ -52,13 +52,13 @@ const Login = () => {
 
     if (!validate()) return;
 
-      const loggedUser = await handleLogin({ email, password });
-      if (loggedUser.success) {
+      const  result = await handleLogin({ email, password });
+      if (result.success) {
         toast.success("Logged in successfully");
         // Redirect is handled declaratively by the <Navigate> guard below,
         // once the `user` state has actually committed — no race.
       } else {
-        toast.error(loggedUser.message);
+        toast.error(result.message);
       }
     
   };

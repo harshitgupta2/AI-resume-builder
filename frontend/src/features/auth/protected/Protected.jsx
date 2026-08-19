@@ -7,7 +7,7 @@ import Loader from "../components/Loader"
 const Protected = ({children})=>{
 const location = useLocation();
 
-    const{user,loading} = useContext(AuthContext)
+const{user,loading} = useContext(AuthContext)
 if(loading){
   return <Loader />
 }
