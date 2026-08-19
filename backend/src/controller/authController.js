@@ -57,16 +57,23 @@ export const loginUserController = async (req, res) => {
         });
 
     } catch (error) {
+        if (error.message === "User not registered") {
+            return res.status(404).json({
+                success: false,
+                message: "User not registered. Please register first.",
+            });
+        }
 
-        const status =
-            error.message === "User not registered" ||
-            error.message === "Invalid email or password"
-                ? 401
-                : 500;
+        if (error.message === "Invalid email or password") {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password",
+            });
+        }
 
-        return res.status(status).json({
+        return res.status(500).json({
             success: false,
-            message: error.message,
+            message: "Something went wrong. Please try again.",
         });
     }
 };

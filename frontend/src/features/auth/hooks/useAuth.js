@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { register, login, logout} from "../services/auth.api.js";
+import toast from "react-hot-toast";
 
 export const useAuth = () => {
     const { user, loading, setUser, setLoading } = useContext(AuthContext);
@@ -21,7 +22,7 @@ export const useAuth = () => {
         }
         
     };
-    const   handleLogin = async ({ email, password }) => {
+    const  handleLogin = async ({ email, password }) => {
         setLoading(true);
         try {
             const data = await login({ email, password });
@@ -29,7 +30,16 @@ export const useAuth = () => {
                 setUser(data.user);
             }
             return data?.user ?? null;
-        } finally {
+        }catch(error){
+             const message =
+            error?.response?.data?.message ||
+            "Something went wrong. Please try again.";
+
+        toast.error(message);
+
+        return null;
+        }
+         finally {
             setLoading(false);
         }
     };
