@@ -35,9 +35,10 @@ export const useAuth = () => {
             error?.response?.data?.message ||
             "Something went wrong. Please try again.";
 
-        toast.error(message);
-
-        return null;
+        return {
+            success:false,
+            message
+        };
         }
          finally {
             setLoading(false);

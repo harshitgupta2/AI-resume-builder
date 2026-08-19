@@ -52,18 +52,15 @@ const Login = () => {
 
     if (!validate()) return;
 
-    try {
       const loggedUser = await handleLogin({ email, password });
-      if (loggedUser) {
+      if (loggedUser.success) {
         toast.success("Logged in successfully");
         // Redirect is handled declaratively by the <Navigate> guard below,
         // once the `user` state has actually committed — no race.
       } else {
-        toast.error("Login failed. Please try again.");
+        toast.error(loggedUser.message);
       }
-    } catch (error) {
-      toast.error(error?.message || "Invalid email or password");
-    }
+    
   };
 
   // Once authenticated, leave the login page for the intended destination.
