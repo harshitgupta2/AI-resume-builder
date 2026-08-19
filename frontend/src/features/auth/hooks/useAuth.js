@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { register, login, logout} from "../services/auth.api.js";
-import toast from "react-hot-toast";
+
 
 export const useAuth = () => {
     const { user, loading, setUser, setLoading } = useContext(AuthContext);

@@ -1,4 +1,4 @@
-import { AuthContext } from "./AuthContext.jsx";
+import { AuthContext } from "./authContext";
 import { useState,useEffect } from "react";
 import {getUser} from "../services/auth.api.js";
  
