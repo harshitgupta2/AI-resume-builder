@@ -1,19 +1,22 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { useNavigate, Link } from "react-router";
-import { Briefcase, User, UploadCloud, FileText, Star, Info, X, ChevronRight } from "lucide-react";
+import { useState, useRef, useCallback, useEffect, useContext } from "react";
+import { useNavigate, useLocation, Link } from "react-router";
+import {
+  Briefcase,
+  User,
+  UploadCloud,
+  FileText,
+  Star,
+  Info,
+  X,
+  ChevronRight,
+} from "lucide-react";
 import { useInterview } from "../hooks/useInterview";
 import { getAllInterviewReports } from "../services/api";
-
-
-/* ------------------------------------------------------------------
-   Home — interview report intake
-   Collects: job description (required), resume PDF, self description
-   Layout: single card, two columns, prominent footer CTA
-   Theme: slate-950 / slate-50, amber-300 accent
------------------------------------------------------------------- */
+import { AuthContext } from "../../auth/context/AuthContext";
 
 const MAX_BYTES = 3 * 1024 * 1024;
 const MAX_CHARS = 5000;
+const PENDING_KEY = "pendingReport";
 
 const EYEBROW = "text-[10.5px] font-semibold uppercase tracking-[0.2em]";
 const BADGE =
@@ -39,14 +42,36 @@ const Home = () => {
   const [fileError, setFileError] = useState("");
   const [formError, setFormError] = useState("");
   const [dragging, setDragging] = useState(false);
+  const [recent, setRecent] = useState([]);
   const fileInputRef = useRef(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { generateReport, loading } = useInterview();
+  // authLoading keeps a signed-in user from being bounced to /login during the
+  // moment after a hard refresh when the session hasn't been verified yet.
+  const { user, loading: authLoading } = useContext(AuthContext);
 
-  const [recent, setRecent] = useState([]);
-
+  /* Restore the draft stashed before the login redirect. */
   useEffect(() => {
+    const raw = sessionStorage.getItem(PENDING_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(PENDING_KEY);
+    try {
+      const data = JSON.parse(raw);
+      setJobDescription(data.jobDescription ?? "");
+      setSelfDescription(data.selfDescription ?? "");
+    } catch {
+      // Corrupt entry — nothing to restore.
+    }
+  }, []);
+
+  /* Recent reports — only meaningful once we know who the user is. */
+  useEffect(() => {
+    if (!user) {
+      setRecent([]);
+      return;
+    }
     let alive = true;
     getAllInterviewReports()
       .then((res) => {
@@ -59,13 +84,15 @@ const Home = () => {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [user]);
 
   const acceptFile = useCallback((next) => {
     if (!next) return;
     if (next.type !== "application/pdf") {
       setFile(null);
-      setFileError("That file isn't a PDF. Export your resume as PDF and try again.");
+      setFileError(
+        "That file isn't a PDF. Export your resume as PDF and try again.",
+      );
       return;
     }
     if (next.size > MAX_BYTES) {
@@ -85,11 +112,22 @@ const Home = () => {
 
   const hasResume = Boolean(file);
   const hasRole = jobDescription.trim().length > 0;
-  const canSubmit = hasResume && hasRole && !loading;
+  const canSubmit = hasResume && hasRole && !loading && !authLoading;
+  const needsResumeAgain = !file && jobDescription.trim().length > 0;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setFormError("");
+
+    if (!user) {
+      sessionStorage.setItem(
+        PENDING_KEY,
+        JSON.stringify({ jobDescription, selfDescription }),
+      );
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+
     try {
       const created = await generateReport({
         resumeFile: file,
@@ -103,10 +141,12 @@ const Home = () => {
       }
     } catch (err) {
       setFormError(
-        err.message || "Couldn't reach the server. Check your connection and try again."
+        err.message ||
+          "Couldn't reach the server. Check your connection and try again.",
       );
     }
   };
+
   return (
     <div className="font-body min-h-screen bg-slate-950 px-4 py-12 text-slate-50 sm:px-6">
       {/* Top bar */}
@@ -183,7 +223,9 @@ const Home = () => {
               <div className="flex items-center gap-4 rounded-xl border border-amber-300 bg-slate-900 px-5 py-4">
                 <FileText className="shrink-0 text-amber-300" size={20} />
                 <div className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">{file.name}</span>
+                  <span className="block truncate font-medium">
+                    {file.name}
+                  </span>
                   <span className="mt-0.5 block text-[13px] text-slate-400">
                     {formatSize(file.size)} · Attached
                   </span>
@@ -221,7 +263,9 @@ const Home = () => {
                 <span className="font-medium text-slate-50">
                   Click to upload or drag &amp; drop
                 </span>
-                <span className={`${EYEBROW} text-slate-500`}>PDF · Max 3MB</span>
+                <span className={`${EYEBROW} text-slate-500`}>
+                  PDF · Max 3MB
+                </span>
               </button>
             )}
 
@@ -234,6 +278,11 @@ const Home = () => {
             />
             {fileError && (
               <p className="mt-2 text-[13px] text-rose-300">{fileError}</p>
+            )}
+            {!fileError && needsResumeAgain && (
+              <p className="mt-2 text-[13px] text-slate-400">
+                Attach your resume again to continue.
+              </p>
             )}
 
             {/* OR divider */}
@@ -263,8 +312,9 @@ const Home = () => {
             <div className="mt-4 flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
               <Info className="mt-0.5 shrink-0 text-amber-300" size={16} />
               <p className="text-[13px] leading-relaxed text-slate-400">
-                A <b className="font-semibold text-slate-200">resume (PDF)</b> and
-                the <b className="font-semibold text-slate-200">job description</b>{" "}
+                A <b className="font-semibold text-slate-200">resume (PDF)</b>{" "}
+                and the{" "}
+                <b className="font-semibold text-slate-200">job description</b>{" "}
                 are required to generate a personalized plan.
               </p>
             </div>
@@ -275,6 +325,11 @@ const Home = () => {
         <div className="flex flex-col items-end gap-2 border-t border-slate-800 bg-slate-900/60 px-7 py-5 sm:px-8">
           {formError && (
             <span className="text-[13px] text-rose-300">{formError}</span>
+          )}
+          {!authLoading && !user && canSubmit && (
+            <span className="text-[13px] text-slate-400">
+              You'll sign in first. Your job description is kept.
+            </span>
           )}
 
           <button
