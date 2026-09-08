@@ -97,7 +97,7 @@ export const logoutUserController = async(req,res)=>{
         const accesstoken = req.cookies?.accesstoken || req.headers.authorization?.split(" ")[1];
          await logoutUserService(accesstoken);
 
-         res.clearCookie("accesstoken", cookieOptions)
+         res.clearCookie("accesstoken");
          res.status(200).json({
             success:true,
             message:"User Logged Out Successfully"

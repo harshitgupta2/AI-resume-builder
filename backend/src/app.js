@@ -12,7 +12,8 @@ const app = express();
 app.use(cors({
     origin:[
         'http://localhost:5173',
-      'ai-resume-builder-silk-pi.vercel.app'
+      'https://ai-resume-builder-silk-pi.vercel.app'
+
     ],
     credentials:true
 }));
