@@ -11,7 +11,7 @@ const app = express();
 
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://ai-resume-builder-silk-apppi.vercel.app'
+    'https://ai-resume-builder-silk-pi.vercel.app',
 ];
 
 app.use(cors({
