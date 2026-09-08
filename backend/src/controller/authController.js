@@ -9,19 +9,14 @@ import {
 // In production the frontend (Vercel) and backend (Render) are on different
 // sites, so the auth cookie must be SameSite=None + Secure to be stored.
 // Locally over http that combo is rejected, so fall back to lax/insecure.
-const isProd = process.env.NODE_ENV === "production";
-const cookieOptions = {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? "none" : "lax",
-};
+
 
 export const registerUserController = async (req, res) => {
     try {
 
         const { token, user } = await registerUserService(req.body);
 
-        res.cookie("accesstoken", token, cookieOptions);
+        res.cookie("accesstoken", token);
 
         return res.status(201).json({
             success: true,
@@ -48,7 +43,7 @@ export const loginUserController = async (req, res) => {
 
         const { token, user } = await loginUserService(req.body);
 
-        res.cookie("accesstoken", token, cookieOptions);
+        res.cookie("accesstoken", token);
 
         return res.status(200).json({
             success: true,
