@@ -9,13 +9,14 @@ import interviewRouter from './routes/interviewRoutes.js';
 const app = express();
 
 
-app.use(cors({
-    origin:[
-        'http://localhost:5173',
-      'https://ai-resume-builder-silk-pi.vercel.app'
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://ai-resume-builder-silk-apppi.vercel.app'
+];
 
-    ],
-    credentials:true
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser())
