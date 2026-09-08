@@ -12,7 +12,7 @@ const app = express();
 app.use(cors({
     origin:[
         'http://localhost:5173',
-      'https://ai-resume-builder-bnxl58q0z-harshitgupta2s-projects.vercel.app'
+      'ai-resume-builder-silk-pi.vercel.app'
     ],
     credentials:true
 }));
