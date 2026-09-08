@@ -16,7 +16,12 @@ export const registerUserController = async (req, res) => {
 
         const { token, user } = await registerUserService(req.body);
 
-        res.cookie("accesstoken", token);
+        res.cookie("accesstoken", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
 
         return res.status(201).json({
             success: true,
@@ -43,7 +48,12 @@ export const loginUserController = async (req, res) => {
 
         const { token, user } = await loginUserService(req.body);
 
-        res.cookie("accesstoken", token);
+       res.cookie("accesstoken", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
         return res.status(200).json({
             success: true,
