@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Normalize so the base always ends in exactly one /api — whether VITE_API_URL
 // is set to the origin (…onrender.com) or already includes /api.
-const API_BASE = (import.meta.env.VITE_API_URL || "https://ai-resume-builder-7a3u.onrender.com")
+const API_BASE = (import.meta.env.VITE_API_URL || "https://ai-resume-builder-production-5142.up.railway.app")
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
 
