@@ -94,6 +94,7 @@ export const generateInterviewReportController = async (req, res) => {
 export const getInterviewReportController = async (req, res) => {
   try {
     const { interviewId } = req.params;
+    console.log(interviewId)
     const interviewReport = await InterviewReport.findOne({_id: interviewId, user: req.user._id});
 
     if (!interviewReport) {

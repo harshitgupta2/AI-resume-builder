@@ -87,7 +87,11 @@ const Home = () => {
   }, [user]);
 
   const acceptFile = useCallback((next) => {
+
     if (!next) return;
+  console.log("File name:", next.name);
+  console.log("File type:", next.type);
+  console.log("File size:", next.size);
     if (next.type !== "application/pdf") {
       setFile(null);
       setFileError(
@@ -130,7 +134,7 @@ const Home = () => {
 
     try {
       const created = await generateReport({
-        resumeFile: file,
+        resume: file,
         jobDescription: jobDescription.trim(),
         selfDescription: selfDescription.trim(),
       });
