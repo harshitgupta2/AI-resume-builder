@@ -134,7 +134,7 @@ const Home = () => {
 
     try {
       const created = await generateReport({
-        resume: file,
+        resumeFile: file,
         jobDescription: jobDescription.trim(),
         selfDescription: selfDescription.trim(),
       });
