@@ -27,15 +27,15 @@ export const useInterview = () => {
 
   const generateReport = async ({
     resumeFile,
-    jobdescription,
-    selfdecription,
+    jobDescription,
+    selfDescription,
   }) => {
     setLoading?.(true);
     try {
       const response = await createInterviewReport({
         resumeFile,
-        jobdescription,
-        selfdecription,
+        jobDescription,
+        selfDescription,
       });
 
       if (response?.data) {
