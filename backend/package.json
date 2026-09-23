@@ -12,7 +12,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@google/genai": "^2.13.0",
+    "groq-sdk": "^1.6.0",
     "@napi-rs/canvas": "^1.0.3",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
