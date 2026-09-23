@@ -1,86 +1,389 @@
 import { z } from "zod";
 
-// --- Sub Schemas ---
+// ----------------------------------------------------
+// TECHNICAL QUESTION
+// ----------------------------------------------------
 
 const technicalQuestionSchema = z.object({
   questions: z
     .string()
-    .describe("Technical question that can be asked in the interview."),
+    .describe(
+      "Concise technical question relevant to the target job."
+    ),
+
   intention: z
     .string()
     .describe(
-      "The interviewer's underlying intention/goal behind asking this question."
+      "Interviewer's intention. Keep it under 12 words."
     ),
+
   answer: z
     .string()
     .describe(
-      "How to answer the question, including what points to cover and what technical approach to use."
+      "Concise recommended answer. Keep it under 45 words."
     ),
 });
+
+
+// ----------------------------------------------------
+// BEHAVIOURAL QUESTION
+// ----------------------------------------------------
 
 const behaviouralQuestionSchema = z.object({
   questions: z
     .string()
-    .describe("Behavioral question that can be asked in the interview."),
+    .describe(
+      "Concise behavioral question relevant to the target job."
+    ),
+
   intention: z
     .string()
     .describe(
-      "The interviewer's underlying intention (e.g., testing teamwork, conflict resolution, ownership)."
+      "Interviewer's intention. Keep it under 12 words."
     ),
+
   answer: z
     .string()
     .describe(
-      "How to answer using frameworks like STAR (Situation, Task, Action, Result), key points to mention, and tone."
+      "Concise recommended answer. Keep it under 45 words."
     ),
 });
+
+
+// ----------------------------------------------------
+// SKILL GAP
+// ----------------------------------------------------
 
 const skillGapSchema = z.object({
   skill: z
     .string()
-    .describe("The specific skill, tool, or technology where a gap exists."),
+    .describe(
+      "Specific relevant skill gap. Keep it concise."
+    ),
+
   severity: z
     .enum(["low", "medium", "high"])
-    .describe("The severity level of this skill gap for the target job role."),
+    .describe(
+      "Severity of the skill gap."
+    ),
 });
+
+
+// ----------------------------------------------------
+// PREPARATION PLAN
+// ----------------------------------------------------
 
 const preparationPlanSchema = z.object({
   days: z
     .number()
-    .describe("The day or time frame number for this section of the plan."),
+    .int()
+    .min(1)
+    .max(5)
+    .describe(
+      "Preparation day number from 1 to 5."
+    ),
+
   focus: z
     .string()
-    .describe("Main focal area or objective for these preparation days."),
+    .describe(
+      "Main topic for this preparation day. Keep it concise."
+    ),
+
   tasks: z
     .array(z.string())
-    .describe("Specific, actionable tasks or topics to study during this period."),
+    .length(2)
+    .describe(
+      "Exactly 2 short actionable tasks."
+    ),
 });
 
-// --- Main Schema ---
+
+// ----------------------------------------------------
+// MAIN ZOD SCHEMA
+// ----------------------------------------------------
 
 export const interviewReportZodSchema = z.object({
+
   jobTitle: z
     .string()
     .describe(
-      "The job title/role this report targets, taken from the job description (e.g., 'Senior Frontend Engineer'). If not stated explicitly, infer a concise, conventional role title."
+      "Target job title from the job description."
     ),
+
   matchScore: z
     .number()
     .min(0)
     .max(100)
-    .describe("Overall percentage match score (0-100) between candidate profile and job description."),
+    .describe(
+      "Overall candidate match score from 0 to 100."
+    ),
+
   techinalQuestions: z
     .array(technicalQuestionSchema)
-    .describe("List of potential technical questions, their intentions, and recommended answer approaches."),
+    .length(5)
+    .describe(
+      "Exactly 5 technical interview questions."
+    ),
+
   behaviouralQuestions: z
     .array(behaviouralQuestionSchema)
-    .describe("List of potential behavioral questions, their intentions, and recommended answer approaches."),
+    .length(3)
+    .describe(
+      "Exactly 3 behavioral interview questions."
+    ),
+
   skillGaps: z
     .array(skillGapSchema)
-    .describe("Identified skill gaps categorized by severity."),
+    .length(3)
+    .describe(
+      "Exactly 3 relevant skill gaps."
+    ),
+
   preparationPlan: z
     .array(preparationPlanSchema)
-    .describe("Step-by-step preparation plan broken down into actionable days and tasks."),
+    .length(5)
+    .describe(
+      "Exactly 5 preparation days."
+    ),
 });
 
-// JSON Schema helper for Google GenAI SDK
-export const interviewReportJsonSchema = z.toJSONSchema(interviewReportZodSchema);
+
+// ----------------------------------------------------
+// GROQ JSON SCHEMA
+// ----------------------------------------------------
+
+export const interviewReportJsonSchema = {
+  type: "object",
+
+  properties: {
+
+    // ------------------------------------------------
+    // JOB TITLE
+    // ------------------------------------------------
+
+    jobTitle: {
+      type: "string",
+      description:
+        "Target job title from the job description.",
+    },
+
+
+    // ------------------------------------------------
+    // MATCH SCORE
+    // ------------------------------------------------
+
+    matchScore: {
+      type: "number",
+      minimum: 0,
+      maximum: 100,
+      description:
+        "Overall candidate match score from 0 to 100.",
+    },
+
+
+    // ------------------------------------------------
+    // TECHNICAL QUESTIONS
+    // ------------------------------------------------
+
+    techinalQuestions: {
+      type: "array",
+
+      minItems: 5,
+      maxItems: 5,
+
+      items: {
+        type: "object",
+
+        properties: {
+
+          questions: {
+            type: "string",
+            description:
+              "Concise technical question relevant to the target job.",
+          },
+
+          intention: {
+            type: "string",
+            description:
+              "Interviewer's intention. Keep it under 12 words.",
+          },
+
+          answer: {
+            type: "string",
+            description:
+              "Concise recommended answer. Keep it under 45 words.",
+          },
+        },
+
+        required: [
+          "questions",
+          "intention",
+          "answer",
+        ],
+
+        additionalProperties: false,
+      },
+    },
+
+
+    // ------------------------------------------------
+    // BEHAVIOURAL QUESTIONS
+    // ------------------------------------------------
+
+    behaviouralQuestions: {
+      type: "array",
+
+      minItems: 3,
+      maxItems: 3,
+
+      items: {
+        type: "object",
+
+        properties: {
+
+          questions: {
+            type: "string",
+            description:
+              "Concise behavioral question relevant to the target job.",
+          },
+
+          intention: {
+            type: "string",
+            description:
+              "Interviewer's intention. Keep it under 12 words.",
+          },
+
+          answer: {
+            type: "string",
+            description:
+              "Concise recommended answer. Keep it under 45 words.",
+          },
+        },
+
+        required: [
+          "questions",
+          "intention",
+          "answer",
+        ],
+
+        additionalProperties: false,
+      },
+    },
+
+
+    // ------------------------------------------------
+    // SKILL GAPS
+    // ------------------------------------------------
+
+    skillGaps: {
+      type: "array",
+
+      minItems: 3,
+      maxItems: 3,
+
+      items: {
+        type: "object",
+
+        properties: {
+
+          skill: {
+            type: "string",
+            description:
+              "Specific relevant skill gap. Keep it concise.",
+          },
+
+          severity: {
+            type: "string",
+
+            enum: [
+              "low",
+              "medium",
+              "high",
+            ],
+
+            description:
+              "Severity of the skill gap.",
+          },
+        },
+
+        required: [
+          "skill",
+          "severity",
+        ],
+
+        additionalProperties: false,
+      },
+    },
+
+
+    // ------------------------------------------------
+    // PREPARATION PLAN
+    // ------------------------------------------------
+
+    preparationPlan: {
+      type: "array",
+
+      minItems: 5,
+      maxItems: 5,
+
+      items: {
+        type: "object",
+
+        properties: {
+
+          days: {
+            type: "number",
+            minimum: 1,
+            maximum: 5,
+            description:
+              "Preparation day number from 1 to 5.",
+          },
+
+          focus: {
+            type: "string",
+            description:
+              "Main topic for this preparation day. Keep it concise.",
+          },
+
+          tasks: {
+            type: "array",
+
+            minItems: 2,
+            maxItems: 2,
+
+            items: {
+              type: "string",
+            },
+
+            description:
+              "Exactly 2 short actionable tasks.",
+          },
+        },
+
+        required: [
+          "days",
+          "focus",
+          "tasks",
+        ],
+
+        additionalProperties: false,
+      },
+    },
+  },
+
+
+  // ------------------------------------------------
+  // REQUIRED FIELDS
+  // ------------------------------------------------
+
+  required: [
+    "jobTitle",
+    "matchScore",
+    "techinalQuestions",
+    "behaviouralQuestions",
+    "skillGaps",
+    "preparationPlan",
+  ],
+
+  additionalProperties: false,
+};

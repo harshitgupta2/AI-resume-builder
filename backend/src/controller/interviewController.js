@@ -57,6 +57,12 @@ export const generateInterviewReportController = async (req, res) => {
     // --- end PDF parsing ---
 
     const { selfDescription, jobDescription } = req.body;
+      if (!jobDescription?.trim()) {
+      return res.status(400).json({
+      success: false,
+      message: "Job description is required",
+    });
+  }
 
     const interviewReportByAi = await generateInterviewReport({
       resume: resumeContent,
