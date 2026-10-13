@@ -1,7 +1,5 @@
 import mongoose from 'mongoose'
 
-
-
 // these are the sub schema to have more readability
  const techinalQuestionsSchema = new mongoose.Schema({
     questions:{
